@@ -193,7 +193,7 @@
         <section class="complaints-section">
             <h2>Complaint Management</h2>
             <div class="complaint-actions">
-                <button class="btn primary"><i class="fas fa-plus"></i> New Complaint</button>
+                <button id="new-complaint-btn" class="btn primary"><i class="fas fa-plus"></i> New Complaint</button>
                 <div class="filter-options">
                     <select>
                         <option value="all">All Complaints</option>
@@ -203,100 +203,44 @@
                 </div>
             </div>
 
-            <div class="complaints-list">
-                <div class="complaint-card" data-complaint-id="1">
-                    <div class="complaint-header">
-                        <h3>Room Maintenance</h3>
-                        <span class="status pending">Pending</span>
-                    </div>
-                    <div class="complaint-details">
-                        <p><i class="fas fa-user"></i> murtaza (Room 102)</p>
-                        <p><i class="fas fa-calendar"></i> Submitted: 15/03/2024</p>
-                        <p><i class="fas fa-info-circle"></i> Leaking faucet in bathroom</p>
-                    </div>
-                    <div class="complaint-actions">
-                        <button class="btn secondary" onclick="editComplaint('1')">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn success" onclick="resolveComplaint('1')">
-                            <i class="fas fa-check"></i> Resolve
-                        </button>
-                        <button class="btn danger" onclick="removeComplaint('1')">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                </div>
-
-                <div class="complaint-card">
-                    <div class="complaint-header">
-                        <h3>WiFi Issue</h3>
-                        <span class="status resolved">Resolved</span>
-                    </div>
-                    <div class="complaint-details">
-                        <p><i class="fas fa-user"></i> mansoor (Room 201)</p>
-                        <p><i class="fas fa-calendar"></i> Submitted: 10/03/2024</p>
-                        <p><i class="fas fa-info-circle"></i> No internet connection in room</p>
-                    </div>
-                    <div class="complaint-actions">
-                        <button class="btn secondary"><i class="fas fa-edit"></i> Update</button>
-                        <button class="btn success"><i class="fas fa-check"></i> Resolve</button>
-                    </div>
-                </div>
+            <div id="complaint-grid" class="complaint-grid">
+                <!-- Complaints will be loaded here dynamically -->
             </div>
         </section>
-    </main>
 
-    <!-- Add Complaint Modal -->
-    <div id="addComplaintModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Add New Complaint</h2>
-            <form id="addComplaintForm">
-                <div class="form-group">
-                    <label for="complaintTitle">Title:</label>
-                    <input type="text" id="complaintTitle" name="complaintTitle" required>
-                </div>
-                <div class="form-group">
-                    <label for="complaintDescription">Description:</label>
-                    <textarea id="complaintDescription" name="complaintDescription" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="status">Status:</label>
-                    <select id="status" name="status" required>
-                        <option value="Pending">Pending</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Resolved">Resolved</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="date">Date:</label>
-                    <input type="date" id="date" name="date" required>
-                </div>
-                <div class="form-group">
-                    <label for="priority">Priority:</label>
-                    <select id="priority" name="priority" required>
-                        <option value="High">High</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Low">Low</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="category">Category:</label>
-                    <select id="category" name="category" required>
-                        <option value="Maintenance">Maintenance</option>
-                        <option value="Electrical">Electrical</option>
-                        <option value="Plumbing">Plumbing</option>
-                        <option value="Cleaning">Cleaning</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn primary">Submit Complaint</button>
-                    <button type="button" class="btn secondary" onclick="closeModal()">Cancel</button>
-                </div>
-            </form>
+        <div id="new-complaint-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Submit a New Complaint</h3>
+                <form id="new-complaint-form" class="new-complaint-form">
+                    <div class="form-group">
+                        <label for="student-name">Your Name</label>
+                        <input type="text" id="student-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="room-number">Room Number</label>
+                        <input type="text" id="room-number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaint-category">Category</label>
+                        <select id="complaint-category" required>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="noise">Noise</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaint-details">Details</label>
+                        <textarea id="complaint-details" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary">Submit Complaint</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    </main>
 
     <!-- Footer -->
     <footer>
@@ -313,104 +257,7 @@
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        // Modal functionality
-        const modal = document.getElementById('addComplaintModal');
-        const addComplaintBtn = document.querySelector('.btn.primary');
-        const closeBtn = document.querySelector('.close');
-        const addComplaintForm = document.getElementById('addComplaintForm');
-        const complaintsList = document.querySelector('.complaints-list');
-
-        // Open modal for new complaint
-        addComplaintBtn.addEventListener('click', () => {
-            addComplaintForm.reset();
-            addComplaintForm.dataset.mode = 'add';
-            document.querySelector('.modal-content h2').textContent = 'Add New Complaint';
-            modal.style.display = 'block';
-        });
-
-        // Close modal
-        function closeModal() {
-            modal.style.display = 'none';
-            addComplaintForm.reset();
-        }
-
-        closeBtn.addEventListener('click', closeModal);
-
-        // Close modal when clicking outside
-        window.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
-        });
-
-        // Edit complaint function
-        window.editComplaint = function(complaintId) {
-            const complaintCard = document.querySelector(`[data-complaint-id="${complaintId}"]`);
-            if (!complaintCard) return;
-
-            document.getElementById('complaintTitle').value = complaintCard.querySelector('h3').textContent;
-            document.getElementById('complaintDescription').value = complaintCard.querySelector('.complaint-details p:nth-child(3)').textContent.replace('Submitted: ', '');
-            document.getElementById('status').value = complaintCard.querySelector('.status').textContent;
-            document.getElementById('date').value = complaintCard.querySelector('.complaint-details p:nth-child(2)').textContent.replace('Submitted: ', '');
-            document.getElementById('priority').value = complaintCard.dataset.priority || 'Medium';
-            document.getElementById('category').value = complaintCard.dataset.category || 'General';
-
-            addComplaintForm.dataset.mode = 'edit';
-            addComplaintForm.dataset.editId = complaintId;
-            document.querySelector('.modal-content h2').textContent = 'Edit Complaint';
-            modal.style.display = 'block';
-        };
-
-        // Remove complaint function
-        window.removeComplaint = function(complaintId) {
-            if (confirm('Are you sure you want to remove this complaint?')) {
-                const complaintCard = document.querySelector(`[data-complaint-id="${complaintId}"]`);
-                if (complaintCard) {
-                    complaintCard.remove();
-                }
-            }
-        };
-
-        // Resolve complaint function
-        window.resolveComplaint = function(complaintId) {
-            const complaintCard = document.querySelector(`[data-complaint-id="${complaintId}"]`);
-            if (complaintCard) {
-                const statusSpan = complaintCard.querySelector('.status');
-                statusSpan.textContent = 'Resolved';
-                statusSpan.className = 'status resolved';
-                
-                const resolveBtn = complaintCard.querySelector('.btn.success');
-                if (resolveBtn) {
-                    resolveBtn.disabled = true;
-                    resolveBtn.textContent = 'Resolved';
-                }
-            }
-        };
-
-        // Handle form submission
-        addComplaintForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                id: this.dataset.mode === 'edit' ? this.dataset.editId : Date.now().toString(),
-                title: document.getElementById('complaintTitle').value,
-                description: document.getElementById('complaintDescription').value,
-                status: document.getElementById('status').value,
-                date: document.getElementById('date').value,
-                priority: document.getElementById('priority').value,
-                category: document.getElementById('category').value
-            };
-
-            if (this.dataset.mode === 'edit') {
-                const complaintCard = document.querySelector(`[data-complaint-id="${this.dataset.editId}"]`);
-                if (complaintCard) {
-                    complaintCard.querySelector('h3').textContent = formData.title;
-                    complaintCard.querySelector('.status').textContent = formData.status;
-                    complaintCard.querySelector('.status').className = `status ${formData.status.toLowerCase()}`;
-                }
-            }
-        });
-    </script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="complaints.js"></script>
 </body>
 </html>

@@ -172,97 +172,47 @@
 
     <div class="room-container">
         <div class="room-filters">
-            <input type="text" class="filter-input" placeholder="Search by room number...">
-            <select class="filter-input">
-                <option value="">All Status</option>
+            <input type="text" id="search-input" class="filter-input" placeholder="Search by room number...">
+            <select id="status-filter" class="filter-input">
+                <option value="all">All Status</option>
                 <option value="available">Available</option>
                 <option value="occupied">Occupied</option>
             </select>
-            <button class="btn primary">Add New Room</button>
+            <button id="add-room-btn" class="btn primary">Add New Room</button>
         </div>
 
-        <div class="room-grid">
-            <!-- Room Card 1 -->
-            <div class="room-card" data-room-number="101">
-                <div class="room-header">
-                    <h3>Room 101</h3>
-                    <span class="room-status status-available">Available</span>
-                </div>
-                <div class="room-details">
-                    <p><i class="fas fa-bed"></i> Capacity: 2 Students</p>
-                    <p><i class="fas fa-rupee-sign"></i> Rent: ₹5,000/year</p>
-                    <p><i class="fas fa-info-circle"></i> Type: Standard</p>
-                </div>
-                <div class="room-actions">
-                    <button class="action-btn edit-btn" onclick="editRoom('101')">Edit</button>
-                    <button class="action-btn delete-btn" onclick="removeRoom('101')">Delete</button>
-                </div>
-            </div>
-
-            <!-- Room Card 2 -->
-            <div class="room-card" data-room-number="102">
-                <div class="room-header">
-                    <h3>Room 102</h3>
-                    <span class="room-status status-occupied">Occupied</span>
-                </div>
-                <div class="room-details">
-                    <p><i class="fas fa-bed"></i> Capacity: 3 Students</p>
-                    <p><i class="fas fa-rupee-sign"></i> Rent: ₹5,000/year</p>
-                    <p><i class="fas fa-info-circle"></i> Type: Deluxe</p>
-                </div>
-                <div class="room-actions">
-                    <button class="action-btn edit-btn" onclick="editRoom('102')">Edit</button>
-                    <button class="action-btn delete-btn" onclick="removeRoom('102')">Delete</button>
-                </div>
-            </div>
+        <div id="room-grid" class="room-grid">
+            <!-- Room cards will be loaded here dynamically -->
         </div>
     </div>
 
     <!-- Add Room Modal -->
-    <div id="addRoomModal" class="modal">
+    <div id="add-room-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Add New Room</h2>
-            <form id="addRoomForm">
+            <h3>Add New Room</h3>
+            <form id="add-room-form">
                 <div class="form-group">
-                    <label for="roomNumber">Room Number:</label>
-                    <input type="text" id="roomNumber" name="roomNumber" required>
+                    <label for="room-number">Room Number</label>
+                    <input type="text" id="room-number" required>
                 </div>
                 <div class="form-group">
-                    <label for="capacity">Capacity:</label>
-                    <input type="number" id="capacity" name="capacity" min="1" required>
+                    <label for="capacity">Capacity</label>
+                    <input type="number" id="capacity" required>
                 </div>
                 <div class="form-group">
-                    <label for="occupants">Current Occupants:</label>
-                    <input type="number" id="occupants" name="occupants" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="status">Status:</label>
-                    <select id="status" name="status" required>
-                        <option value="Available">Available</option>
-                        <option value="Occupied">Occupied</option>
-                        <option value="Maintenance">Maintenance</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="type">Room Type:</label>
-                    <select id="type" name="type" required>
-                        <option value="Standard">Standard</option>
-                        <option value="Deluxe">Deluxe</option>
-                        <option value="Premium">Premium</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="floor">Floor:</label>
-                    <input type="number" id="floor" name="floor" min="1" required>
+                    <label for="rent">Rent (per year)</label>
+                    <input type="number" id="rent" required>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn primary">Save Room</button>
-                    <button type="button" class="btn secondary" onclick="closeModal()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="rooms.js"></script>
 
     <!-- Footer -->
     <footer>
@@ -287,17 +237,17 @@
 
     <script>
         // Modal functionality
-        const modal = document.getElementById('addRoomModal');
-        const addRoomBtn = document.querySelector('.btn.primary');
+        const modal = document.getElementById('add-room-modal');
+        const addRoomBtn = document.getElementById('add-room-btn');
         const closeBtn = document.querySelector('.close');
-        const form = document.getElementById('addRoomForm');
-        const roomGrid = document.querySelector('.room-grid');
+        const form = document.getElementById('add-room-form');
+        const roomGrid = document.getElementById('room-grid');
 
         // Open modal for new room
         addRoomBtn.addEventListener('click', () => {
             form.reset();
             form.dataset.mode = 'add';
-            document.querySelector('.modal-content h2').textContent = 'Add New Room';
+            document.querySelector('.modal-content h3').textContent = 'Add New Room';
             modal.style.display = 'block';
         });
 
@@ -321,15 +271,13 @@
             const roomCard = document.querySelector(`[data-room-number="${roomNumber}"]`);
             if (!roomCard) return;
 
-            document.getElementById('roomNumber').value = roomNumber;
+            document.getElementById('room-number').value = roomNumber;
             document.getElementById('capacity').value = roomCard.querySelector('.room-details p:nth-child(1)').textContent.split(': ')[1].split(' ')[0];
-            document.getElementById('status').value = roomCard.querySelector('.room-status').textContent;
-            document.getElementById('type').value = roomCard.querySelector('.room-details p:nth-child(3)').textContent.split(': ')[1];
-            document.getElementById('floor').value = roomNumber.charAt(0);
+            document.getElementById('rent').value = roomCard.querySelector('.room-details p:nth-child(2)').textContent.split(': ')[1].split(' ')[0];
 
             form.dataset.mode = 'edit';
             form.dataset.editNumber = roomNumber;
-            document.querySelector('.modal-content h2').textContent = 'Edit Room';
+            document.querySelector('.modal-content h3').textContent = 'Edit Room';
             modal.style.display = 'block';
         };
 
@@ -348,20 +296,17 @@
             e.preventDefault();
             
             const formData = {
-                number: document.getElementById('roomNumber').value,
+                number: document.getElementById('room-number').value,
                 capacity: document.getElementById('capacity').value,
-                status: document.getElementById('status').value,
-                type: document.getElementById('type').value
+                rent: document.getElementById('rent').value
             };
 
             if (this.dataset.mode === 'edit') {
                 const roomCard = document.querySelector(`[data-room-number="${this.dataset.editNumber}"]`);
                 if (roomCard) {
                     roomCard.querySelector('h3').textContent = `Room ${formData.number}`;
-                    roomCard.querySelector('.room-status').textContent = formData.status;
-                    roomCard.querySelector('.room-status').className = `room-status status-${formData.status.toLowerCase()}`;
                     roomCard.querySelector('.room-details p:nth-child(1)').innerHTML = `<i class="fas fa-bed"></i> Capacity: ${formData.capacity} Students`;
-                    roomCard.querySelector('.room-details p:nth-child(3)').innerHTML = `<i class="fas fa-info-circle"></i> Type: ${formData.type}`;
+                    roomCard.querySelector('.room-details p:nth-child(2)').innerHTML = `<i class="fas fa-rupee-sign"></i> Rent: ₹${formData.rent}/year`;
                     roomCard.dataset.roomNumber = formData.number;
                 }
             } else {
@@ -371,12 +316,11 @@
                 roomCard.innerHTML = `
                     <div class="room-header">
                         <h3>Room ${formData.number}</h3>
-                        <span class="room-status status-${formData.status.toLowerCase()}">${formData.status}</span>
+                        <span class="room-status status-available">Available</span>
                     </div>
                     <div class="room-details">
                         <p><i class="fas fa-bed"></i> Capacity: ${formData.capacity} Students</p>
-                        <p><i class="fas fa-rupee-sign"></i> Rent: ₹5,000/year</p>
-                        <p><i class="fas fa-info-circle"></i> Type: ${formData.type}</p>
+                        <p><i class="fas fa-rupee-sign"></i> Rent: ₹${formData.rent}/year</p>
                     </div>
                     <div class="room-actions">
                         <button class="action-btn edit-btn" onclick="editRoom('${formData.number}')">Edit</button>

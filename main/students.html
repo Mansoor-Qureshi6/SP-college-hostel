@@ -180,92 +180,61 @@
         <section class="students-section">
             <h2>Student Management</h2>
             <div class="student-actions">
-                <button class="btn primary"><i class="fas fa-plus"></i> Add New Student</button>
+                <button id="add-student-btn" class="btn primary"><i class="fas fa-plus"></i> Add New Student</button>
                 <div class="search-box">
-                    <input type="text" placeholder="Search students...">
+                    <input type="text" id="search-input" placeholder="Search students...">
                     <i class="fas fa-search"></i>
                 </div>
             </div>
 
-            <div class="student-list">
-                <div class="student-card" data-student-id="SPC2024001">
-                    <div class="student-info">
-                        <h3>John Doe</h3>
-                        <p><i class="fas fa-id-card"></i> SPC2024001</p>
-                        <p><i class="fas fa-bed"></i> Room 102</p>
-                        <p><i class="fas fa-phone"></i> +91 9876543210</p>
-                    </div>
-                    <div class="student-actions">
-                        <button class="btn secondary edit-btn" onclick="editStudent('SPC2024001')">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn danger delete-btn" onclick="removeStudent('SPC2024001')">
-                            <i class="fas fa-trash"></i> Remove
-                        </button>
-                    </div>
-                </div>
-
-                <div class="student-card" data-student-id="SPC2024002">
-                    <div class="student-info">
-                        <h3>Jane Smith</h3>
-                        <p><i class="fas fa-id-card"></i> SPC2024002</p>
-                        <p><i class="fas fa-bed"></i> Room 201</p>
-                        <p><i class="fas fa-phone"></i> +91 9876543211</p>
-                    </div>
-                    <div class="student-actions">
-                        <button class="btn secondary edit-btn" onclick="editStudent('SPC2024002')">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn danger delete-btn" onclick="removeStudent('SPC2024002')">
-                            <i class="fas fa-trash"></i> Remove
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <table class="student-table">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Roll Number</th>
+                        <th>Room Number</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="student-table-body">
+                    <!-- Student data will be loaded here dynamically -->
+                </tbody>
+            </table>
         </section>
+
+        <!-- Add Student Modal -->
+        <div id="add-student-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Add New Student</h3>
+                <form id="add-student-form">
+                    <div class="form-group">
+                        <label for="student-name">Student Name</label>
+                        <input type="text" id="student-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="roll-number">Roll Number</label>
+                        <input type="text" id="roll-number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="room-number">Room Number</label>
+                        <input type="text" id="room-number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-number">Contact Number</label>
+                        <input type="text" id="contact-number" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary">Save Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
 
-    <!-- Add Student Modal -->
-    <div id="addStudentModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Add New Student</h2>
-            <form id="addStudentForm">
-                <div class="form-group">
-                    <label for="studentName">Full Name:</label>
-                    <input type="text" id="studentName" name="studentName" required>
-                </div>
-                <div class="form-group">
-                    <label for="studentId">Student ID:</label>
-                    <input type="text" id="studentId" name="studentId" required>
-                </div>
-                <div class="form-group">
-                    <label for="roomNumber">Room Number:</label>
-                    <input type="text" id="roomNumber" name="roomNumber" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone Number:</label>
-                    <input type="tel" id="phone" name="phone" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="course">Course:</label>
-                    <input type="text" id="course" name="course" required>
-                </div>
-                <div class="form-group">
-                    <label for="address">Address:</label>
-                    <textarea id="address" name="address" required></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn primary">Add Student</button>
-                    <button type="button" class="btn secondary" onclick="closeModal()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="students.js"></script>
 
     <footer>
         <div class="footer-content">
@@ -279,172 +248,5 @@
             <p class="developer-credits">Developed By Mansoor Qureshi and Muslim Nazir</p>
         </div>
     </footer>
-
-    <script src="script.js"></script>
-    <script>
-        // Modal functionality
-        const modal = document.getElementById('addStudentModal');
-        const addStudentBtn = document.querySelector('.btn.primary');
-        const closeBtn = document.querySelector('.close');
-        const form = document.getElementById('addStudentForm');
-        const studentList = document.querySelector('.student-list');
-
-        // Load students from localStorage on page load
-        function loadStudents() {
-            const students = JSON.parse(localStorage.getItem('students')) || [];
-            studentList.innerHTML = ''; // Clear existing students
-            
-            students.forEach(student => {
-                const studentCard = createStudentCard(student);
-                studentList.appendChild(studentCard);
-            });
-        }
-
-        // Save students to localStorage
-        function saveStudents() {
-            const studentCards = document.querySelectorAll('.student-card');
-            const students = Array.from(studentCards).map(card => {
-                const studentInfo = card.querySelector('.student-info');
-                return {
-                    name: studentInfo.querySelector('h3').textContent,
-                    id: studentInfo.querySelector('p:nth-child(2)').textContent.split(' ')[1],
-                    room: studentInfo.querySelector('p:nth-child(3)').textContent.split(' ')[2],
-                    phone: studentInfo.querySelector('p:nth-child(4)').textContent.split(' ')[1],
-                    email: card.dataset.email || '',
-                    course: card.dataset.course || '',
-                    address: card.dataset.address || ''
-                };
-            });
-            localStorage.setItem('students', JSON.stringify(students));
-        }
-
-        // Create student card element
-        function createStudentCard(student) {
-            const studentCard = document.createElement('div');
-            studentCard.className = 'student-card';
-            studentCard.dataset.studentId = student.id;
-            studentCard.dataset.email = student.email;
-            studentCard.dataset.course = student.course;
-            studentCard.dataset.address = student.address;
-            
-            studentCard.innerHTML = `
-                <div class="student-info">
-                    <h3>${student.name}</h3>
-                    <p><i class="fas fa-id-card"></i> ${student.id}</p>
-                    <p><i class="fas fa-bed"></i> Room ${student.room}</p>
-                    <p><i class="fas fa-phone"></i> ${student.phone}</p>
-                </div>
-                <div class="student-actions">
-                    <button class="btn secondary edit-btn" onclick="editStudent('${student.id}')">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button class="btn danger delete-btn" onclick="removeStudent('${student.id}')">
-                        <i class="fas fa-trash"></i> Remove
-                    </button>
-                </div>
-            `;
-            return studentCard;
-        }
-
-        // Open modal for new student
-        addStudentBtn.addEventListener('click', () => {
-            form.reset();
-            form.dataset.mode = 'add';
-            document.querySelector('.modal-content h2').textContent = 'Add New Student';
-            modal.style.display = 'block';
-        });
-
-        // Close modal
-        function closeModal() {
-            modal.style.display = 'none';
-            form.reset();
-        }
-
-        closeBtn.addEventListener('click', closeModal);
-
-        // Close modal when clicking outside
-        window.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
-        });
-
-        // Edit student function
-        window.editStudent = function(studentId) {
-            const studentCard = document.querySelector(`[data-student-id="${studentId}"]`);
-            if (!studentCard) return;
-
-            const studentInfo = studentCard.querySelector('.student-info');
-            const name = studentInfo.querySelector('h3').textContent;
-            const id = studentInfo.querySelector('p:nth-child(2)').textContent.split(' ')[1];
-            const room = studentInfo.querySelector('p:nth-child(3)').textContent.split(' ')[2];
-            const phone = studentInfo.querySelector('p:nth-child(4)').textContent.split(' ')[1];
-
-            // Fill form with student data
-            document.getElementById('studentName').value = name;
-            document.getElementById('studentId').value = id;
-            document.getElementById('roomNumber').value = room;
-            document.getElementById('phone').value = phone;
-            document.getElementById('email').value = studentCard.dataset.email || '';
-            document.getElementById('course').value = studentCard.dataset.course || '';
-            document.getElementById('address').value = studentCard.dataset.address || '';
-
-            // Set form mode to edit
-            form.dataset.mode = 'edit';
-            form.dataset.editId = studentId;
-            document.querySelector('.modal-content h2').textContent = 'Edit Student';
-
-            // Show modal
-            modal.style.display = 'block';
-        };
-
-        // Remove student function
-        window.removeStudent = function(studentId) {
-            if (confirm('Are you sure you want to remove this student?')) {
-                const studentCard = document.querySelector(`[data-student-id="${studentId}"]`);
-                if (studentCard) {
-                    studentCard.remove();
-                    saveStudents(); // Save changes after removal
-                }
-            }
-        };
-
-        // Handle form submission
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('studentName').value,
-                id: document.getElementById('studentId').value,
-                room: document.getElementById('roomNumber').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                course: document.getElementById('course').value,
-                address: document.getElementById('address').value
-            };
-
-            if (this.dataset.mode === 'edit') {
-                // Update existing student card
-                const studentCard = document.querySelector(`[data-student-id="${this.dataset.editId}"]`);
-                if (studentCard) {
-                    const newStudentCard = createStudentCard(formData);
-                    studentCard.replaceWith(newStudentCard);
-                }
-            } else {
-                // Create new student card
-                const studentCard = createStudentCard(formData);
-                studentList.appendChild(studentCard);
-            }
-
-            // Save changes to localStorage
-            saveStudents();
-
-            // Close modal and reset form
-            closeModal();
-        });
-
-        // Load students when page loads
-        loadStudents();
-    </script>
 </body>
 </html> 
